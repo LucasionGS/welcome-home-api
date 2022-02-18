@@ -45,4 +45,21 @@ export namespace WebCardController {
     }
   }
   router.delete("/:id", deleteById);
+
+  export const reorder = async (req: Request, res: Response) => {
+    const ids = req.body.ids as number[];
+    const promises: Promise<WebCard>[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      const webcard = await WebCard.findByPk(ids[i]);
+      if (webcard) {
+        promises.push(webcard.update({
+          position: i,
+        }));
+      }
+    }
+    await Promise.all(promises);
+    res.json({
+      success: true,
+    });
+  }
 }

@@ -9,6 +9,7 @@ interface WebCardAttributes {
   image: string;
   target: string;
   checkAvailable: boolean;
+  position: number;
 }
 
 interface WebCardCreationAttributes extends Partial<WebCardAttributes> {
@@ -24,6 +25,7 @@ export default class WebCard extends Model<WebCardAttributes, WebCardCreationAtt
   public image: string;
   public target: string;
   public checkAvailable: boolean;
+  public position: number;
 }
 
 WebCard.init(
@@ -58,6 +60,11 @@ WebCard.init(
       allowNull: false,
       defaultValue: false,
     },
+    position: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    }
   },
   {
     sequelize: mysql,
