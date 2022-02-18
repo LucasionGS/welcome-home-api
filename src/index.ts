@@ -1,43 +1,31 @@
-import express from "express";
-import { SiteOptionController } from "./controllers/OptionController";
-import { WebCardController } from "./controllers/WebCardController";
-import { ImageController } from "./controllers/ImageController";
-import mysql from "./mysql";
-import cors from "cors";
-import fs from "fs";
-import Path from "path";
+import cp from "child_process";
 
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-const PORT = process.env.PORT || 4321;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-// Sync database
-mysql.sync({
-  alter: true,
-});
-
-// API routes
-app.use("/api/option", SiteOptionController.router);
-app.use("/api/webcard", WebCardController.router);
-app.use("/api/image", ImageController.router);
-
-// Serve static images
-const uploadsDir = Path.resolve(__dirname, "../uploads");
-if (fs.existsSync(uploadsDir)) {
-  app.use("/uploads", express.static(uploadsDir));
-}
-
-// Serve static files
-const publicDir = Path.resolve(__dirname, "../public");
-if (fs.existsSync(publicDir)) {
-  app.use(express.static(publicDir), (req, res) => {
-    res.sendFile(Path.resolve(publicDir, "index.html"));
+const args = process.argv.slice(2);
+let app: cp.ChildProcess;
+startApp();
+/**
+ * Sets app to the child process
+ */
+function startApp() {
+  console.log(__dirname + "/init.js");
+  
+  app = cp.fork(__dirname + "/init.js", args);
+  app.on("spawn", () => {
+    console.log("Spawned app");
+  });
+  app.on("exit", (code) => {
+    console.log("Server stopped");
+    // Restart server if code is -1 or 255
+    if (code === -1 || code === 255) {
+      console.log("Restarting server...");
+      startApp();    
+    }
   });
 }
+
+// Handle app exit
+process.on("exit", () => {
+  if (app) {
+    app.kill();
+  }
+});

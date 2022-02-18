@@ -1,4 +1,4 @@
-import mysql from "../mysql";
+import sql from "../sql";
 import { Model, DataTypes } from "sequelize";
 
 interface ImageAttributes {
@@ -56,7 +56,8 @@ Image.init(
     }
   },
   {
-    sequelize: mysql,
+    sequelize: sql,
     modelName: "images",
   },
 );
+console.log("Image Model loaded");

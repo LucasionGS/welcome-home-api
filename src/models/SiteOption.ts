@@ -1,4 +1,4 @@
-import mysql from "../mysql";
+import sql from "../sql";
 import { Model, DataTypes } from "sequelize";
 
 interface SiteOptionAttributes {
@@ -36,7 +36,8 @@ SiteOption.init(
     }
   },
   {
-    sequelize: mysql,
+    sequelize: sql,
     modelName: "siteOptions",
   },
 );
+console.log("SiteOption Model loaded");

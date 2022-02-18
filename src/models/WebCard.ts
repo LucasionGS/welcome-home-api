@@ -1,4 +1,4 @@
-import mysql from "../mysql";
+import sql from "../sql";
 import { Model, DataTypes } from "sequelize";
 
 interface WebCardAttributes {
@@ -67,7 +67,8 @@ WebCard.init(
     }
   },
   {
-    sequelize: mysql,
+    sequelize: sql,
     modelName: "webcards",
   },
 );
+console.log("WebCard Model loaded");
