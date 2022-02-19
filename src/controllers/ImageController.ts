@@ -6,7 +6,7 @@ import fsp from "fs/promises";
 import Path from "path";
 
 const uploader = multer({
-  dest: "uploads/",
+  dest: Path.resolve(__dirname, "../../uploads"),
 });
 
 export namespace ImageController {

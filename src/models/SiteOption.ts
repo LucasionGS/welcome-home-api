@@ -8,8 +8,8 @@ interface SiteOptionAttributes {
 }
 
 interface SiteOptionCreationAttributes extends Partial<SiteOptionAttributes> {
-  title: string;
-  url: string;
+  key: string;
+  value: string;
 }
 
 export default class SiteOption extends Model<SiteOptionAttributes, SiteOptionCreationAttributes> {
