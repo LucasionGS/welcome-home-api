@@ -25,7 +25,8 @@ if (fs.existsSync(uploadsDir)) {
 }
 
 // Serve static files
-const publicDir = fs.realpathSync(Path.resolve(__dirname, "../public"));
+// const publicDir = fs.realpathSync(Path.resolve(__dirname, "../public"));
+const publicDir = Path.resolve(__dirname, "../public");
 if (fs.existsSync(publicDir)) {
   app.use(
     express.static(publicDir),
