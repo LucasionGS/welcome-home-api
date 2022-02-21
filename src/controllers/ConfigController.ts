@@ -36,7 +36,10 @@ export namespace ConfigController {
   router.post("/", createConfig);
 
   export const getConfig = async (req: Request, res: Response) => {
-    res.json(sqlConfig)
+    const _temp: typeof sqlConfig = {} as any;
+    Object.assign(_temp, sqlConfig);
+    delete _temp.password;
+    res.json(_temp);
   }
   router.get("/", getConfig);
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import sql from "./sql";
+import sql, { sqlConfig } from "./sql";
 import cors from "cors";
 import fs from "fs";
 import Path from "path";
@@ -29,6 +29,18 @@ if (fs.existsSync(uploadsDir)) {
   app.use("/uploads", express.static(uploadsDir));
 }
 
+// Only allow setup if using memory mode
+if (sqlConfig.__defaultConfig !== true) {
+  app.use("/setup*", (req, res) => {
+    res.send(
+      [
+        "Setup is not allowed once the database is configured.",
+        "Please delete the config file and restart the server to re-run setup."
+      ].join("<br>")
+    );
+  });
+}
+
 // Serve static files
 // const publicDir = fs.realpathSync(Path.resolve(__dirname, "../public"));
 const publicDir = Path.resolve(__dirname, "../public");
@@ -41,5 +53,7 @@ if (fs.existsSync(publicDir)) {
 
 // Sync database
 sql.sync({
-  alter: true,
+  // Alter true if dev mode
+  alter: args.includes("--dev"),
+  // force: true
 });

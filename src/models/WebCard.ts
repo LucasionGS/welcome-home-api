@@ -10,6 +10,7 @@ interface WebCardAttributes {
   target: string;
   checkAvailable: boolean;
   position: number;
+  category: string;
 }
 
 interface WebCardCreationAttributes extends Partial<WebCardAttributes> {
@@ -26,6 +27,7 @@ export default class WebCard extends Model<WebCardAttributes, WebCardCreationAtt
   public target: string;
   public checkAvailable: boolean;
   public position: number;
+  public category: string;
 }
 
 WebCard.init(
@@ -64,7 +66,11 @@ WebCard.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-    }
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
   {
     sequelize: sql,

@@ -1,9 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
-import fs from "fs";
 import fsp from "fs/promises";
 import Path from "path";
 import cp from "child_process";
 import User from "../models/User";
+
+// Systeminformation
+import Systeminformation from "systeminformation";
 
 async function existsAsync(path: string): Promise<boolean> {
   return fsp.access(path).then(() => true).catch(() => false);
@@ -19,7 +21,35 @@ export namespace ServerController {
     });
   }
   router.get("/uptime", uptime);
+
+  export const getSystemStats = async (req: Request, res: Response) => {
+    const [
+      cpu,
+      mem,
+      os,
+      fs,
+      load
+    ] = await Promise.all([
+      Systeminformation.cpuTemperature(),
+      Systeminformation.mem(),
+      Systeminformation.osInfo(),
+      Systeminformation.fsSize(),
+      Systeminformation.currentLoad(),
+    ]);
+
+    const stats = {
+      cpu,
+      mem,
+      os,
+      fs,
+      load
+    };
+
+    res.json(stats);
+  }
+  router.get("/system-stats", User.authenticate(true), getSystemStats);
   
+  // Docker stuff
   export const isDocker = () => process.env.WELCOME_HOME_DOCKER !== undefined;
   
   export const getIsDocker = (req: Request, res: Response) => {

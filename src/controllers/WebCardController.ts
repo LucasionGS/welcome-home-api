@@ -53,7 +53,7 @@ export namespace WebCardController {
       const webcard = await WebCard.findByPk(ids[i]);
       if (webcard) {
         promises.push(webcard.update({
-          position: i,
+          position: i + 1,
         }));
       }
     }
@@ -62,4 +62,5 @@ export namespace WebCardController {
       success: true,
     });
   }
+  router.put("/reorder", reorder);
 }
