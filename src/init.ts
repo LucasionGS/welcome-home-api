@@ -54,6 +54,6 @@ if (fs.existsSync(publicDir)) {
 // Sync database
 sql.sync({
   // Alter true if dev mode
-  alter: args.includes("--dev"),
+  alter: true, // args.includes("--dev"),
   // force: true
 });

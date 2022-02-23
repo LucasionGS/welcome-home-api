@@ -74,7 +74,12 @@ WebCard.init(
   },
   {
     sequelize: sql,
-    modelName: "webcards",
+    tableName: "webcards",
+    indexes: [
+      {
+        fields: ["category"],
+      },
+    ],
   },
 );
 console.log("WebCard Model loaded");

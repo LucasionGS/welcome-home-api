@@ -42,6 +42,7 @@ User.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     password: {
       type: DataTypes.STRING,
@@ -54,7 +55,12 @@ User.init(
   },
   {
     sequelize: sql,
-    modelName: "users",
+    tableName: "users",
+    indexes: [
+      {
+        fields: ["username"]
+      }
+    ]
   },
 );
 console.log("User Model loaded");

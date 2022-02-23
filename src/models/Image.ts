@@ -57,7 +57,12 @@ Image.init(
   },
   {
     sequelize: sql,
-    modelName: "images",
+    tableName: "images",
+    indexes: [
+      {
+        fields: ["name"]
+      }
+    ]
   },
 );
 console.log("Image Model loaded");

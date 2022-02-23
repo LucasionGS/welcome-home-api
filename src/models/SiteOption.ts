@@ -37,7 +37,12 @@ SiteOption.init(
   },
   {
     sequelize: sql,
-    modelName: "siteOptions",
+    tableName: "siteOptions",
+    indexes: [
+      {
+        fields: ["key"]
+      }
+    ]
   },
 );
 console.log("SiteOption Model loaded");
