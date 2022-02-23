@@ -8,6 +8,7 @@ import Systeminformation from "systeminformation";
 import { Stats } from "fs";
 import multer from "multer";
 import { tmpdir } from "os";
+import { fileTypeFromBuffer } from "file-type";
 const tmpFolder = multer({
   dest: tmpdir(),
 });
@@ -33,13 +34,15 @@ export namespace ServerController {
       mem,
       os,
       fs,
-      load
+      load,
+      processes
     ] = await Promise.all([
       Systeminformation.cpuTemperature(),
       Systeminformation.mem(),
       Systeminformation.osInfo(),
       Systeminformation.fsSize(),
       Systeminformation.currentLoad(),
+      Systeminformation.processes()
     ]);
 
     const stats = {
@@ -47,7 +50,8 @@ export namespace ServerController {
       mem,
       os,
       fs,
-      load
+      load,
+      processes
     };
 
     res.json(stats);
@@ -104,6 +108,28 @@ export namespace ServerController {
   }
   router.get("/file", User.authenticate(true), getFile);
 
+  export const previewFile = async (req: Request, res: Response) => {
+    const path = Path.resolve((req.query.path as string));
+    const stat = await fsp.stat(path).catch(() => null);
+
+    if (!stat) {
+      res.status(404).json({
+        error: "File not found"
+      });
+      return;
+    }
+
+    if (stat.isDirectory()) {
+      res.status(400).json({
+        error: "Cannot preview a directory"
+      });
+      return;
+    }
+
+    res.sendFile(path);
+  }
+  router.get("/preview-file", User.authenticate(true), previewFile);
+
   export const setFile = async (req: Request, res: Response) => {
     const _path: string = req.body ? req.body.path : null;
     if (!_path) {
@@ -113,7 +139,7 @@ export namespace ServerController {
     }
 
     // _path = _path.split("/").pop();
-    
+
     const path = Path.resolve((_path as string));
     const data = req.file;
 
@@ -122,7 +148,7 @@ export namespace ServerController {
         error: "Missing file"
       });
     }
-  
+
     await fsp.rename(data.path, path).catch((err) => {
       console.error(`Failed to write file ${path}`);
       console.error(err);

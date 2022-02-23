@@ -43,7 +43,7 @@ WebCard.init(
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     url: {
       type: DataTypes.STRING,
@@ -51,7 +51,7 @@ WebCard.init(
     },
     image: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     target: {
       type: DataTypes.STRING,
@@ -69,7 +69,7 @@ WebCard.init(
     },
     category: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
