@@ -5,11 +5,14 @@ import imageSize from "image-size";
 import fsp from "fs/promises";
 import Path from "path";
 
-const uploader = multer({
-  dest: Path.resolve(__dirname, "../../uploads"),
-});
 
 export namespace ImageController {
+  const uploadPath = Path.resolve(__dirname, "../../uploads");
+  
+  export const uploader = multer({
+    dest: uploadPath,
+  });
+  
   export const router = Router();
 
   export const getAll = async (req: Request, res: Response) => {
@@ -18,24 +21,44 @@ export namespace ImageController {
   };
   router.get("/", getAll);
 
-  export const upload = async (req: Request, res: Response) => {
+  export const upload = async (file: Express.Multer.File): Promise<[{ image: Image, fullPath: string }, { error: string }]> => {
+    const img = file;
+    if (img) {
+      try {
+        const ext = img.originalname.split(".").pop();
+        const dimensions = imageSize(img.path);
+        const _dir = Path.dirname(img.path);
+        const newPath = Path.resolve(_dir, `${img.filename}.${ext}`);
+        await fsp.rename(img.path, newPath);
+        const image = await Image.create({
+          name: img.originalname,
+          path: img.filename + "." + ext,
+          size: img.size,
+          width: dimensions.width,
+          height: dimensions.height,
+        });
+        return [{
+          image,
+          fullPath: newPath,
+        }, null];
+      } catch (error: any) {
+        return [null, { error: error.message }];
+      }
+    } else {
+      return [null, { error: "No file was uploaded" }];
+    }
+  }
+
+  export const uploadEndpoint = async (req: Request, res: Response) => {
     const img = req.file;
     if (img) {
-      const ext = img.originalname.split(".").pop();
-      const dimensions = imageSize(img.path);
-      const _dir = Path.dirname(img.path);
-      await fsp.rename(img.path, Path.resolve(_dir, `${img.filename}.${ext}`));
-      const image = await Image.create({
-        name: img.originalname,
-        path: img.filename + "." + ext,
-        size: img.size,
-        width: dimensions.width,
-        height: dimensions.height,
-      });
-      res.json(image);
-    } else {
-      res.status(400).json({ error: "No file was uploaded" });
+      const [image, error] = await upload(img);
+      if (image && image.image) {
+        res.json(image.image);
+      } else {
+        res.status(400).json(error);
+      }
     }
   };
-  router.post("/", uploader.single("image"), upload);
+  router.post("/", uploader.single("image"), uploadEndpoint);
 }

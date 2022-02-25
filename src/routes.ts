@@ -4,8 +4,25 @@ import { ImageController } from "./controllers/ImageController";
 import { Express } from "express";
 import { ConfigController } from "./controllers/ConfigController";
 import { ServerController } from "./controllers/ServerController";
+import SiteOption from "./models/SiteOption";
 
 export function createApiRoutes(app: Express) {
+  // Create favicon
+  app.get("/favicon.ico", async (req, res) => {
+    const opt = await SiteOption.getOption("favicon");
+    if (!opt) return res.status(404).send("Not found");
+    res.sendFile(opt.value);
+  });
+  app.post("/favicon.ico", ImageController.uploader.single("image"), async (req, res) => {
+    const img = req.file;
+    const [data, err] = await ImageController.upload(img);
+    if (err) {
+      return res.status(500).json(err);
+    }
+    const opt = await SiteOption.setOption("favicon", data.fullPath);
+    res.json(opt.toPair());
+  });
+  
   // API routes
   app.use("/api/config", ConfigController.router);
   app.use("/api/option", SiteOptionController.router);

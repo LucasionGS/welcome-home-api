@@ -11,11 +11,7 @@ export namespace SiteOptionController {
   router.get("/", getAll);
 
   export const getByKey = async (req: Request, res: Response) => {
-    const siteOption = await SiteOption.findOne({
-      where: {
-        key: req.params.key,
-      },
-    });
+    const siteOption = await SiteOption.getOption(req.params.key);
 
     if (siteOption) {
       res.json({
@@ -35,29 +31,7 @@ export namespace SiteOptionController {
   router.get("/:key", getByKey);
 
   export const set = async (req: Request, res: Response) => {
-    const [siteOption, created] = await SiteOption.findOrCreate({
-      where: {
-        key: req.params.key,
-      },
-      defaults: {
-        key: req.params.key,
-        value: null,
-      }
-    });
-    if (created) {
-      console.log("Created");
-    }
-    else {
-      console.log("Updated");
-    }
-
-    if (req.body.value) {
-      
-      await siteOption.update({
-        value: req.body.value
-      });
-    }
-    
+    const siteOption = await SiteOption.setOption(req.params.key, req.body.value);
     res.json(siteOption);
   }
   router.post("/:key", set);
