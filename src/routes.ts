@@ -1,10 +1,11 @@
 import { SiteOptionController } from "./controllers/OptionController";
 import { WebCardController } from "./controllers/WebCardController";
 import { ImageController } from "./controllers/ImageController";
-import { Express } from "express";
 import { ConfigController } from "./controllers/ConfigController";
 import { ServerController } from "./controllers/ServerController";
+import { FileServerController } from "./controllers/FileServerController";
 import SiteOption from "./models/SiteOption";
+import { Express } from "express";
 
 export function createApiRoutes(app: Express) {
   // Create favicon
@@ -29,6 +30,7 @@ export function createApiRoutes(app: Express) {
   app.use("/api/webcard", WebCardController.router);
   app.use("/api/image", ImageController.router);
   
+  app.use("/api/file-server", FileServerController.router);
   app.use("/api/server", ServerController.router);
   app.use("/api/docker", ServerController.Docker.router);
 }
