@@ -4,51 +4,24 @@ const cp = require("child_process");
 const root = __dirname;
 const args = process.argv.slice(2);
 
-(async () => {
-  const frontendAction = new Promise(resolve => {
-    if (fs.existsSync(root + "/__frontend")) {
-      console.log("Pulling frontend");
-      const _ = cp.exec("git pull", { cwd: root + "/__frontend" });
-      _.on("close", (code) => {
-        resolve(code);
-      });
-    }
-    else {
-      // Get the dev branch of the frontend repo
-      console.log("Cloning frontend");
-      const _ = cp.exec("git clone --branch dev https://github.com/LucasionGS/welcome-home __frontend", { cwd: root });
-      _.on("close", (code) => {
-        resolve(code);
-      });
-    }
-  });
+const flags = {
+  branch: args[0] ?? cp.execSync("git branch --show-current", { cwd: process.cwd(), encoding: "utf8" }).trim(),
+}
 
-  await frontendAction;
+// console.log(flags);
 
-  // Install dependencies
-  console.log("Installing dependencies...");
-  cp.execSync("yarn install", { cwd: root + "/__frontend" });
-
-  // Build frontend
-  console.log("Building frontend...");
-  cp.execSync("yarn build", { cwd: root + "/__frontend" });
-
-  // Remove old /public
-  console.log("Removing old /public...");
-  fs.rmSync(root + "/public", { recursive: true, force: true });
-  
-  // Copy build to ../public
-  console.log("Copying frontend build...");
-  cp.execSync(`cp -r "${root}/__frontend/build" "${root}/public"`);
-
-
+/**
+ * 
+ * @param  {string[]} text 
+ */
+const print = (...text) => {
   const consoleWidth = process.stdout.columns / 2;
   const message = [
     "-".repeat(consoleWidth),
-    "Deployment successful",
-    "-".repeat(consoleWidth),
+    ...text,
+    // "-".repeat(consoleWidth),
   ];
-  
+
   // Center each line
   message.forEach((line, i) => {
     const padding = Math.floor((consoleWidth - line.length) / 2);
@@ -56,5 +29,52 @@ const args = process.argv.slice(2);
   });
 
   console.log(message.join("\n"));
+}
+
+(async () => {
+  // Install dependencies for backend
+  print("Installing backend dependencies...");
+  cp.execSync("npm install", { cwd: root });
+
+  // Build backend
+  print("Building backend...");
+  cp.execSync("npm run build", { cwd: root });
+
+  await new Promise(resolve => {
+    if (fs.existsSync(root + "/__frontend")) {
+      print("Pulling frontend");
+      const _ = cp.exec("git pull", { cwd: root + "/__frontend" });
+      _.on("close", (code) => {
+        resolve(code);
+      });
+    }
+    else {
+      // Get the dev branch of the frontend repo
+      print("Cloning frontend");
+      const _ = cp.exec(`git clone --branch ${flags.branch} https://github.com/LucasionGS/welcome-home __frontend`, { cwd: root });
+      _.on("close", (code) => {
+        resolve(code);
+      });
+    }
+  });
+
+  // Install dependencies
+  print("Installing frontend dependencies...");
+  cp.execSync("yarn install", { cwd: root + "/__frontend" });
+
+  // Build frontend
+  print("Building frontend...");
+  cp.execSync("yarn build", { cwd: root + "/__frontend" });
+
+  // Remove old /public
+  print("Removing old /public...");
+  fs.rmSync(root + "/public", { recursive: true, force: true });
+
+  // Copy build to ../public
+  print("Copying frontend build...");
+  cp.execSync(`cp -r "${root}/__frontend/build" "${root}/public"`);
+
+
+  print("Deployment successful");
 })();
 

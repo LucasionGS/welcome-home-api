@@ -139,16 +139,27 @@ export namespace FileServerController {
 
     const stat: fs.Stats = await fs.promises.stat(filePath).then(stat => stat, () => null);
     if (!stat) {
+      console.error("Not Found");
       return res.status(404).send("Not found");
     }
 
     if (stat.isFile()) {
-      await fs.promises.unlink(filePath);
+      try {
+        await fs.promises.unlink(filePath);
+      } catch (error: any) {
+        console.error(error);
+        return res.status(500).send("Something went wrong deleting the file: " + error.message);
+      }
       return res.send("OK");
     }
 
     if (stat.isDirectory()) {
-      await fs.promises.rmdir(filePath, { recursive: true });
+      try {
+        await fs.promises.rmdir(filePath, { recursive: true });
+      } catch (error: any) {
+        console.error(error);
+        return res.status(500).send("Something went wrong deleting the directory: " + error.message);
+      }
       return res.send("OK");
     }
   });
