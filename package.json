@@ -10,7 +10,8 @@
     "watch": "tsc -w",
     "start": "node .",
     "dev": "node . --dev",
-    "build": "tsc"
+    "build": "tsc",
+    "deploy": "node deploy.js"
   },
   "keywords": [],
   "author": "ion",

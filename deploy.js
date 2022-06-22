@@ -33,6 +33,10 @@ const print = (...text) => {
 
 (async () => {
   // Install dependencies for backend
+  print(
+    `Deploying welcome-home.`,
+    `Branch: ${flags.branch}`
+  );
   print("Installing backend dependencies...");
   cp.execSync("npm install", { cwd: root });
 
@@ -70,9 +74,10 @@ const print = (...text) => {
   print("Removing old /public...");
   fs.rmSync(root + "/public", { recursive: true, force: true });
 
-  // Copy build to ../public
-  print("Copying frontend build...");
-  cp.execSync(`cp -r "${root}/__frontend/build" "${root}/public"`);
+  // Move build to ../public
+  print("Moving frontend build...");
+  // cp.execSync(`cp -r "${root}/__frontend/build" "${root}/public"`);
+  fs.renameSync(root + "/__frontend/build", root + "/public");
 
 
   print("Deployment successful");
