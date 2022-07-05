@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import fsp from "fs/promises";
 import Path from "path";
 import cp from "child_process";
-import User from "../models/User";
+import { authenticate } from "../models/User";
 // Systeminformation
 import Systeminformation from "systeminformation";
 import { Stats } from "fs";
@@ -56,7 +56,7 @@ export namespace ServerController {
 
     res.json(stats);
   }
-  router.get("/system-stats", User.authenticate(true), getSystemStats);
+  router.get("/system-stats", authenticate(["owner"]), getSystemStats);
 
   export const getDirectory = async (req: Request, res: Response) => {
     const dir = Path.resolve((req.query.path as string) || "/");
@@ -85,7 +85,7 @@ export namespace ServerController {
       data.filter(a => a !== null)
     );
   }
-  router.get("/directory", User.authenticate(true), getDirectory);
+  router.get("/directory", authenticate(["owner"]), getDirectory);
 
   export const getFile = async (req: Request, res: Response) => {
     const path = Path.resolve((req.query.path as string));
@@ -106,7 +106,7 @@ export namespace ServerController {
     res.setHeader("Content-Type", "application/octet-stream");
     res.send(data);
   }
-  router.get("/file", User.authenticate(true), getFile);
+  router.get("/file", authenticate(["owner"]), getFile);
 
   export const previewFile = async (req: Request, res: Response) => {
     const path = Path.resolve((req.query.path as string));
@@ -128,7 +128,7 @@ export namespace ServerController {
 
     res.sendFile(path);
   }
-  router.get("/preview-file", User.authenticate(true), previewFile);
+  router.get("/preview-file", authenticate(["owner"]), previewFile);
 
   export const setFile = async (req: Request, res: Response) => {
     const _path: string = req.body ? req.body.path : null;
@@ -164,7 +164,7 @@ export namespace ServerController {
       });
     }
   }
-  router.post("/file", User.authenticate(true), tmpFolder.single("file"), setFile);
+  router.post("/file", authenticate(["owner"]), tmpFolder.single("file"), setFile);
 
   // Docker stuff
   export const isDocker = () => process.env.WELCOME_HOME_DOCKER !== undefined;
@@ -214,6 +214,6 @@ export namespace ServerController {
         success: true,
       });
     }
-    router.post("/update", isDockerMiddleware, User.authenticate(true), update);
+    router.post("/update", isDockerMiddleware, authenticate(["owner"]), update);
   }
 }

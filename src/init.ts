@@ -54,6 +54,8 @@ if (fs.existsSync(publicDir)) {
 // Sync database
 sql.sync({
   // Alter true if dev mode
-  alter: true, // args.includes("--dev"),
+  alter:
+    sql.getDialect() === "sqlite",
+    // args.includes("--dev"),
   // force: true
 });

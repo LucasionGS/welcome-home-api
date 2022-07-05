@@ -6,7 +6,12 @@ import { ServerController } from "./controllers/ServerController";
 import { FileServerController } from "./controllers/FileServerController";
 import SiteOption from "./models/SiteOption";
 import { Express } from "express";
+import { TodoController } from "./controllers/TodoController";
 
+/**
+ * Used to create the API routes.
+ * @param app Express app
+ */
 export function createApiRoutes(app: Express) {
   // Create favicon
   app.get("/favicon.ico", async (req, res) => {
@@ -29,6 +34,7 @@ export function createApiRoutes(app: Express) {
   app.use("/api/option", SiteOptionController.router);
   app.use("/api/webcard", WebCardController.router);
   app.use("/api/image", ImageController.router);
+  app.use("/api/todo", TodoController.router);
   
   app.use("/api/file-server", FileServerController.router);
   app.use("/api/server", ServerController.router);

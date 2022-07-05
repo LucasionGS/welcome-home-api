@@ -5,3 +5,4 @@ public
 uploads
 config.json
 __frontend
+.vscode/settings.json

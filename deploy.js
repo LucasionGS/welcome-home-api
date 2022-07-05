@@ -8,8 +8,6 @@ const flags = {
   branch: args[0] ?? cp.execSync("git branch --show-current", { cwd: process.cwd(), encoding: "utf8" }).trim(),
 }
 
-// console.log(flags);
-
 /**
  * 
  * @param  {string[]} text 

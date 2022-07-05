@@ -3,7 +3,7 @@ import Path from "path";
 import fs from "fs";
 import Multer from "multer";
 import os from "os";
-import User from "../models/User";
+import { authenticate } from "../models/User";
 
 export namespace FileServerController {
   export const router = Router();
@@ -31,7 +31,7 @@ export namespace FileServerController {
     }
   }
 
-  router.get("*", User.authenticate(true), async (req, res) => {
+  router.get("*", authenticate(["owner"]), async (req, res) => {
     console.log("GET", req.url);
     validatePath(req.path);
     const filePath = getFilePath(req.path);
@@ -78,7 +78,7 @@ export namespace FileServerController {
   }
 
   // PUT is used for actions that modify the filesystem.
-  router.put("*", User.authenticate(true), async (req, res) => {
+  router.put("*", authenticate(["owner"]), async (req, res) => {
     console.log("PUT", req.url, req.body);
     validatePath(req.path);
     const filePath = getFilePath(req.path);
@@ -118,7 +118,7 @@ export namespace FileServerController {
   });
 
   // POST is used for uploading files.
-  router.post("*", User.authenticate(true), uploader.single("file"), async (req, res) => {
+  router.post("*", authenticate(["owner"]), uploader.single("file"), async (req, res) => {
     console.log("POST", req.url, req.file);
     validatePath(req.path);
     const filePath = getFilePath(req.path);
@@ -132,7 +132,7 @@ export namespace FileServerController {
   });
 
   // DELETE is used for deleting files.
-  router.delete("*", User.authenticate(true), async (req, res) => {
+  router.delete("*", authenticate(["owner"]), async (req, res) => {
     console.log("DELETE", req.url);
     validatePath(req.path);
     const filePath = getFilePath(req.path);
