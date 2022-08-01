@@ -5,8 +5,16 @@ export namespace SiteOptionController {
   export const router = Router();
 
   export const getAll = async (req: Request, res: Response) => {
-    const siteOptions = await SiteOption.findAll();
-    res.json(siteOptions);
+    const keys = typeof req.query.keys === "string" ? req.query.keys.split(",") : [];
+
+    if (keys.length === 0) {
+      const siteOptions = await SiteOption.findAll();
+      res.json(siteOptions.map(s => s.toPair()));
+    }
+    else {
+      const siteOptions = await SiteOption.getOptions(keys);
+      res.json(siteOptions.map(s => s.toPair()));
+    }
   };
   router.get("/", getAll);
 
@@ -14,10 +22,7 @@ export namespace SiteOptionController {
     const siteOption = await SiteOption.getOption(req.params.key);
 
     if (siteOption) {
-      res.json({
-        key: siteOption.key,
-        value: siteOption.value,
-      });
+      res.json(siteOption.toPair());
     }
     else {
       return res.json(
@@ -30,9 +35,9 @@ export namespace SiteOptionController {
   }
   router.get("/:key", getByKey);
 
-  export const set = async (req: Request, res: Response) => {
+  export const setByKey = async (req: Request, res: Response) => {
     const siteOption = await SiteOption.setOption(req.params.key, req.body.value);
     res.json(siteOption);
   }
-  router.post("/:key", set);
+  router.post("/:key", setByKey);
 }

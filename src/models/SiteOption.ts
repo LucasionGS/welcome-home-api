@@ -1,5 +1,5 @@
 import sql from "../sql";
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, Op } from "sequelize";
 
 interface SiteOptionAttributes {
   id: number;
@@ -32,6 +32,18 @@ export default class SiteOption extends Model<SiteOptionAttributes, SiteOptionCr
     });
 
     return siteOption ?? null;
+  }
+
+  public static async getOptions(keys: string[]): Promise<SiteOption[]> {
+    const siteOptions = await SiteOption.findAll({
+      where: {
+        key: {
+          [Op.in]: keys,
+        },
+      },
+    });
+
+    return siteOptions;
   }
 
   public static async setOption(key: string, value: string) {

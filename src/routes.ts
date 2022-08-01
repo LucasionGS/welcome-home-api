@@ -7,6 +7,7 @@ import { FileServerController } from "./controllers/FileServerController";
 import SiteOption from "./models/SiteOption";
 import { Express } from "express";
 import { TodoController } from "./controllers/TodoController";
+import { ActionController } from "./controllers/ActionController";
 
 /**
  * Used to create the API routes.
@@ -33,6 +34,7 @@ export function createApiRoutes(app: Express) {
   app.use("/api/config", ConfigController.router);
   app.use("/api/option", SiteOptionController.router);
   app.use("/api/webcard", WebCardController.router);
+  app.use("/api/action", ActionController.router);
   app.use("/api/image", ImageController.router);
   app.use("/api/todo", TodoController.router);
   
