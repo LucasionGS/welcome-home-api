@@ -27,6 +27,7 @@
     "@ionkit/authkit": "^1.1.0",
     "@types/cors": "^2.8.12",
     "cors": "^2.8.5",
+    "cross-fetch": "^3.1.5",
     "express": "^4.17.2",
     "file-type": "^17.1.1",
     "image-size": "^1.0.1",
